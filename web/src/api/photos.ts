@@ -1,5 +1,8 @@
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import type { Photo } from './types'
+
+export type { Photo } from './types'
+export type { Tag } from './types'
 
 const API_BASE = '' // proxied via vite
 
@@ -15,6 +18,18 @@ async function searchPhotos(query: string): Promise<{ photos: Photo[]; search_qu
   return res.json()
 }
 
+async function uploadPhoto(file: File): Promise<Photo> {
+  const formData = new FormData()
+  formData.append('photo', file)
+
+  const res = await fetch(`${API_BASE}/api/photos/upload`, {
+    method: 'POST',
+    body: formData,
+  })
+  if (!res.ok) throw new Error('Failed to upload photo')
+  return res.json()
+}
+
 export function usePhotos() {
   return useQuery({
     queryKey: ['photos'],
@@ -27,5 +42,15 @@ export function usePhotoSearch(query: string) {
     queryKey: ['photos', 'search', query],
     queryFn: () => searchPhotos(query),
     enabled: query.length > 0,
+  })
+}
+
+export function useUploadPhoto() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: uploadPhoto,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['photos'] })
+    },
   })
 }
