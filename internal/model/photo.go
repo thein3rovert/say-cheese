@@ -3,7 +3,7 @@ package model
 import "time"
 
 type Photo struct {
-	ID          int64     `json:"id"`
+	ID          string    `json:"id"`
 	Filename    string    `json:"filename"`
 	Path        string    `json:"path"`
 	Caption     string    `json:"caption"`

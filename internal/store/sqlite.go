@@ -32,7 +32,7 @@ func (s *SQLiteStore) DB() *sql.DB {
 func (s *SQLiteStore) migrate() error {
 	queries := []string{
 		`CREATE TABLE IF NOT EXISTS photos (
-			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			id TEXT PRIMARY KEY,
 			filename TEXT NOT NULL,
 			path TEXT NOT NULL,
 			caption TEXT,
@@ -44,7 +44,7 @@ func (s *SQLiteStore) migrate() error {
 			name TEXT NOT NULL UNIQUE
 		);`,
 		`CREATE TABLE IF NOT EXISTS photo_tags (
-			photo_id INTEGER NOT NULL,
+			photo_id TEXT NOT NULL,
 			tag_id INTEGER NOT NULL,
 			PRIMARY KEY (photo_id, tag_id),
 			FOREIGN KEY (photo_id) REFERENCES photos(id),
