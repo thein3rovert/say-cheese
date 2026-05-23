@@ -5,12 +5,14 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/thein3rovert/gallery/internal/api"
+	"github.com/thein3rovert/gallery/internal/handler"
 	"github.com/thein3rovert/gallery/internal/middleware"
+	"github.com/thein3rovert/gallery/internal/service"
 	"github.com/thein3rovert/gallery/internal/store"
 )
 
 func main() {
+	// ── Data layer ──
 	photoStore := store.NewJSONStore()
 
 	// Auto-scan photos directory on startup
@@ -18,19 +20,24 @@ func main() {
 		log.Printf("Warning: could not scan photos: %v", err)
 	}
 
+	// ── Service layer ──
+	photoService := service.NewPhotoService(photoStore)
+
+	// ── Handler layer ──
+	photoHandler := handler.NewPhotoHandler(photoService)
+
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "7070"
 	}
 
 	mux := http.NewServeMux()
-	photoAPI := api.NewPhotoHandler(photoStore)
 
 	// API routes (Go 1.22+ pattern syntax)
-	mux.HandleFunc("GET /api/photos", photoAPI.ListPhotos)
-	mux.HandleFunc("GET /api/photos/search", photoAPI.SearchPhotos)
-	mux.HandleFunc("POST /api/photos/upload", photoAPI.UploadPhoto)
-	mux.HandleFunc("GET /api/photos/{id}", photoAPI.GetPhoto)
+	mux.HandleFunc("GET /api/photos", photoHandler.ListPhotos)
+	mux.HandleFunc("GET /api/photos/search", photoHandler.SearchPhotos)
+	mux.HandleFunc("POST /api/photos/upload", photoHandler.UploadPhoto)
+	mux.HandleFunc("GET /api/photos/{id}", photoHandler.GetPhoto)
 
 	// Static file server for photos
 	mux.Handle("/photos/", http.StripPrefix("/photos/", http.FileServer(http.Dir("./photos"))))

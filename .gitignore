@@ -1,0 +1,46 @@
+# Binaries
+server
+gallery
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Test binaries
+*.test
+
+# Output of go coverage tool
+*.out
+
+# Go workspace files
+go.work
+go.work.sum
+
+# Vendor directory
+vendor/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Runtime data
+gallery.json
+gallery.json.bak
+*.db
+*.db-shm
+*.db-wal
+
+# Photos directory (user content, keep directory but ignore files)
+photos/*
+!photos/.gitkeep
+
+# Nix
+result
+result-*
