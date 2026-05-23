@@ -363,12 +363,21 @@
   --photo-grid-gap:           8px;
   --photo-grid-padding-x:     32px;
   --photo-grid-padding-top:   8px;
+  --photo-grid-columns:       3;  /* desktop: 3 columns */
 
   /* Lightbox / Modal toolbar */
   --modal-btn-size:           36px;
   --modal-btn-gap:            var(--spacing-4);
   --modal-btn-offset:         calc(var(--spacing-4) + var(--modal-btn-size) + var(--modal-btn-gap));
 
+}
+
+/* Mobile responsive grid */
+@media (max-width: 768px) {
+  :root {
+    --photo-grid-columns: 2;  /* mobile: 2 columns */
+    --photo-grid-padding-x: 16px;
+  }
 }
 
 

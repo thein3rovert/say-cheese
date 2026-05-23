@@ -476,8 +476,8 @@ export default function Gallery({ isAdmin = false }: GalleryProps) {
         <div
           className="grid flex-1"
           style={{
-            gridTemplateColumns: 'repeat(3, 1fr)',
-            gridAutoRows: 'calc((100vw - (var(--photo-grid-padding-x) * 2) - (var(--photo-grid-gap) * 2)) / 3 / (16/9))',
+            gridTemplateColumns: 'repeat(var(--photo-grid-columns), 1fr)',
+            gridAutoRows: 'calc((100vw - (var(--photo-grid-padding-x) * 2) - (var(--photo-grid-gap) * (var(--photo-grid-columns) - 1))) / var(--photo-grid-columns) / (16/9))',
             gap: 'var(--photo-grid-gap)',
             paddingTop: 'var(--photo-grid-padding-top)',
             paddingLeft: 'var(--photo-grid-padding-x)',
