@@ -15,8 +15,21 @@ import (
 )
 
 func main() {
+	// ── Data directory (Docker volume mount point) ──
+	dataDir := os.Getenv("DATA_DIR")
+	if dataDir == "" {
+		dataDir = "./data"
+	}
+	photosDir := filepath.Join(dataDir, "photos")
+	
+	// Ensure directories exist
+	if err := os.MkdirAll(photosDir, 0755); err != nil {
+		log.Fatalf("Failed to create photos directory: %v", err)
+	}
+
 	// ── Data layer ──
-	db, err := store.NewSQLiteStore("gallery.db")
+	dbPath := filepath.Join(dataDir, "gallery.db")
+	db, err := store.NewSQLiteStore(dbPath)
 	if err != nil {
 		log.Fatalf("Failed to initialise store: %v", err)
 	}
@@ -24,7 +37,7 @@ func main() {
 	photoStore := store.NewPhotoStore(db.DB())
 
 	// Auto-scan photos directory on startup
-	scanPhotos(photoStore)
+	scanPhotos(photoStore, photosDir)
 
 	// ── Service layer ──
 	photoService := service.NewPhotoService(photoStore)
@@ -46,7 +59,7 @@ func main() {
 	mux.HandleFunc("GET /api/photos/{id}", photoHandler.GetPhoto)
 
 	// Static file server for photos
-	mux.Handle("/photos/", http.StripPrefix("/photos/", http.FileServer(http.Dir("./photos"))))
+	mux.Handle("/photos/", http.StripPrefix("/photos/", http.FileServer(http.Dir(photosDir))))
 
 	// Health check
 	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
@@ -55,16 +68,17 @@ func main() {
 	})
 
 	log.Printf("Gallery server starting on http://localhost:%s", port)
+	log.Printf("Data directory: %s", dataDir)
 	log.Printf("API: http://localhost:%s/api/photos", port)
 	if err := http.ListenAndServe(":"+port, middleware.CORS(middleware.CustomLogger(mux))); err != nil {
 		log.Fatal(err)
 	}
 }
 
-// scanPhotos walks the photos/ directory and registers any unregistered files
-func scanPhotos(ps *store.PhotoStore) {
-	if _, err := os.Stat("photos"); os.IsNotExist(err) {
-		log.Println("photos/ directory does not exist, skipping scan")
+// scanPhotos walks the photos directory and registers any unregistered files
+func scanPhotos(ps *store.PhotoStore, photosDir string) {
+	if _, err := os.Stat(photosDir); os.IsNotExist(err) {
+		log.Println("photos directory does not exist, skipping scan")
 		return
 	}
 
@@ -79,7 +93,7 @@ func scanPhotos(ps *store.PhotoStore) {
 		registered[p.Path] = true
 	}
 
-	entries, err := os.ReadDir("photos")
+	entries, err := os.ReadDir(photosDir)
 	if err != nil {
 		log.Printf("Warning: could not read photos dir: %v", err)
 		return
@@ -92,8 +106,10 @@ func scanPhotos(ps *store.PhotoStore) {
 		if entry.Name() == ".gitkeep" {
 			continue
 		}
-		path := filepath.Join("photos", entry.Name())
-		if registered[path] {
+		
+		// Store relative path in DB for portability
+		relPath := filepath.Join("photos", entry.Name())
+		if registered[relPath] {
 			continue
 		}
 
@@ -107,7 +123,7 @@ func scanPhotos(ps *store.PhotoStore) {
 
 		photo := &model.Photo{
 			Filename: entry.Name(),
-			Path:     path,
+			Path:     relPath,
 			Caption:  caption,
 		}
 		if err := ps.SavePhoto(photo); err != nil {

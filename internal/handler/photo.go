@@ -69,13 +69,20 @@ func (h *PhotoHandler) UploadPhoto(w http.ResponseWriter, r *http.Request) {
 	}
 	defer file.Close()
 
-	if err := os.MkdirAll("photos", 0755); err != nil {
+	// Get data directory from env or default
+	dataDir := os.Getenv("DATA_DIR")
+	if dataDir == "" {
+		dataDir = "./data"
+	}
+	photosDir := filepath.Join(dataDir, "photos")
+	
+	if err := os.MkdirAll(photosDir, 0755); err != nil {
 		respondError(w, http.StatusInternalServerError, "could not create photos directory")
 		return
 	}
 
 	filename := fmt.Sprintf("%d_%s", time.Now().UnixNano(), header.Filename)
-	savePath := filepath.Join("photos", filename)
+	savePath := filepath.Join(photosDir, filename)
 
 	destination, err := os.Create(savePath)
 	if err != nil {
@@ -91,7 +98,7 @@ func (h *PhotoHandler) UploadPhoto(w http.ResponseWriter, r *http.Request) {
 
 	photo := &model.Photo{
 		Filename: header.Filename,
-		Path:     savePath,
+		Path:     filepath.Join("photos", filename),
 		Caption:  r.FormValue("caption"),
 	}
 
