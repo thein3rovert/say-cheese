@@ -4,6 +4,7 @@ import "github.com/thein3rovert/gallery/internal/model"
 
 type Store interface {
 	SavePhoto(photo *model.Photo) error
+	UpdatePhoto(photo *model.Photo) error
 	ListPhotos() ([]model.Photo, error)
 	DeletePhoto(id string) error
 	SaveTag(name string) (int64, error)

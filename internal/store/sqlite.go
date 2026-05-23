@@ -2,6 +2,7 @@ package store
 
 import (
 	"database/sql"
+	"strings"
 
 	_ "modernc.org/sqlite"
 )
@@ -56,5 +57,25 @@ func (s *SQLiteStore) migrate() error {
 			return err
 		}
 	}
+
+	// Migrate: add EXIF columns if they don't exist
+	alterQueries := []string{
+		`ALTER TABLE photos ADD COLUMN camera TEXT;`,
+		`ALTER TABLE photos ADD COLUMN lens TEXT;`,
+		`ALTER TABLE photos ADD COLUMN aperture TEXT;`,
+		`ALTER TABLE photos ADD COLUMN shutter_speed TEXT;`,
+		`ALTER TABLE photos ADD COLUMN iso TEXT;`,
+		`ALTER TABLE photos ADD COLUMN location TEXT;`,
+		`ALTER TABLE photos ADD COLUMN date_taken TEXT;`,
+	}
+	for _, q := range alterQueries {
+		if _, err := s.db.Exec(q); err != nil {
+			// Ignore "duplicate column name" errors
+			if !strings.Contains(err.Error(), "duplicate column name") {
+				return err
+			}
+		}
+	}
+
 	return nil
 }

@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"log"
@@ -48,6 +49,49 @@ func (h *PhotoHandler) GetPhoto(w http.ResponseWriter, r *http.Request) {
 		respondError(w, http.StatusNotFound, "photo not found")
 		return
 	}
+	respondJSON(w, http.StatusOK, photo)
+}
+
+func (h *PhotoHandler) UpdatePhoto(w http.ResponseWriter, r *http.Request) {
+	id := r.PathValue("id")
+	if id == "" {
+		respondError(w, http.StatusBadRequest, "photo ID is required")
+		return
+	}
+
+	photo, err := h.svc.GetPhoto(id)
+	if err != nil {
+		respondError(w, http.StatusInternalServerError, "failed to get photo")
+		return
+	}
+	if photo == nil {
+		respondError(w, http.StatusNotFound, "photo not found")
+		return
+	}
+
+	// Parse JSON body
+	var update model.Photo
+	if err := json.NewDecoder(r.Body).Decode(&update); err != nil {
+		respondError(w, http.StatusBadRequest, "invalid JSON body")
+		return
+	}
+
+	// Only update allowed fields
+	photo.Caption = update.Caption
+	photo.Description = update.Description
+	photo.Camera = update.Camera
+	photo.Lens = update.Lens
+	photo.Aperture = update.Aperture
+	photo.ShutterSpeed = update.ShutterSpeed
+	photo.ISO = update.ISO
+	photo.Location = update.Location
+	photo.DateTaken = update.DateTaken
+
+	if err := h.svc.UpdatePhoto(photo); err != nil {
+		respondError(w, http.StatusInternalServerError, "failed to update photo")
+		return
+	}
+
 	respondJSON(w, http.StatusOK, photo)
 }
 

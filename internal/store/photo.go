@@ -17,14 +17,33 @@ func NewPhotoStore(db *sql.DB) *PhotoStore {
 	return &PhotoStore{db: db}
 }
 
+// all columns for SELECT queries
+const photoCols = `id, filename, path, caption, description, camera, lens, aperture, shutter_speed, iso, location, date_taken, created_at`
+
+func scanPhoto(rows *sql.Rows) (model.Photo, error) {
+	var p model.Photo
+	var dateTaken sql.NullString
+	err := rows.Scan(
+		&p.ID, &p.Filename, &p.Path, &p.Caption, &p.Description,
+		&p.Camera, &p.Lens, &p.Aperture, &p.ShutterSpeed, &p.ISO,
+		&p.Location, &dateTaken, &p.CreatedAt,
+	)
+	if dateTaken.Valid {
+		p.DateTaken = dateTaken.String
+	}
+	return p, err
+}
+
 func (s *PhotoStore) SavePhoto(p *model.Photo) error {
 	if p.ID == "" {
 		p.ID = uuid.NewString()
 	}
 	p.CreatedAt = time.Now()
 	_, err := s.db.Exec(
-		`INSERT INTO photos (id, filename, path, caption, description, created_at) VALUES (?, ?, ?, ?, ?, ?)`,
-		p.ID, p.Filename, p.Path, p.Caption, p.Description, p.CreatedAt,
+		`INSERT INTO photos (id, filename, path, caption, description, camera, lens, aperture, shutter_speed, iso, location, date_taken, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+		p.ID, p.Filename, p.Path, p.Caption, p.Description,
+		p.Camera, p.Lens, p.Aperture, p.ShutterSpeed, p.ISO,
+		p.Location, p.DateTaken, p.CreatedAt,
 	)
 	if err != nil {
 		log.Printf("SavePhoto error: %v", err)
@@ -34,8 +53,20 @@ func (s *PhotoStore) SavePhoto(p *model.Photo) error {
 	return nil
 }
 
+func (s *PhotoStore) UpdatePhoto(p *model.Photo) error {
+	_, err := s.db.Exec(
+		`UPDATE photos SET caption=?, description=?, camera=?, lens=?, aperture=?, shutter_speed=?, iso=?, location=?, date_taken=? WHERE id=?`,
+		p.Caption, p.Description, p.Camera, p.Lens, p.Aperture, p.ShutterSpeed, p.ISO, p.Location, p.DateTaken, p.ID,
+	)
+	if err != nil {
+		log.Printf("UpdatePhoto error: %v", err)
+		return err
+	}
+	return nil
+}
+
 func (s *PhotoStore) ListPhotos() ([]model.Photo, error) {
-	rows, err := s.db.Query(`SELECT id, filename, path, caption, description, created_at FROM photos ORDER BY created_at DESC`)
+	rows, err := s.db.Query(`SELECT ` + photoCols + ` FROM photos ORDER BY created_at DESC`)
 	if err != nil {
 		return nil, err
 	}
@@ -43,8 +74,8 @@ func (s *PhotoStore) ListPhotos() ([]model.Photo, error) {
 
 	var photos []model.Photo
 	for rows.Next() {
-		var p model.Photo
-		if err := rows.Scan(&p.ID, &p.Filename, &p.Path, &p.Caption, &p.Description, &p.CreatedAt); err != nil {
+		p, err := scanPhoto(rows)
+		if err != nil {
 			return nil, err
 		}
 		photos = append(photos, p)
@@ -113,7 +144,7 @@ func (s *PhotoStore) DeletePhoto(id string) error {
 }
 
 func (s *PhotoStore) SearchPhotos(query string) ([]model.Photo, error) {
-	rows, err := s.db.Query(`SELECT id, filename, path, caption, description, created_at FROM photos WHERE caption LIKE ? OR filename LIKE ? ORDER BY created_at DESC`, "%"+query+"%", "%"+query+"%")
+	rows, err := s.db.Query(`SELECT `+photoCols+` FROM photos WHERE caption LIKE ? OR filename LIKE ? OR camera LIKE ? OR location LIKE ? ORDER BY created_at DESC`, "%"+query+"%", "%"+query+"%", "%"+query+"%", "%"+query+"%")
 	if err != nil {
 		return nil, err
 	}
@@ -121,8 +152,8 @@ func (s *PhotoStore) SearchPhotos(query string) ([]model.Photo, error) {
 
 	var photos []model.Photo
 	for rows.Next() {
-		var p model.Photo
-		if err := rows.Scan(&p.ID, &p.Filename, &p.Path, &p.Caption, &p.Description, &p.CreatedAt); err != nil {
+		p, err := scanPhoto(rows)
+		if err != nil {
 			return nil, err
 		}
 		photoTags, err := s.GetPhotoTags(p.ID)
@@ -136,7 +167,7 @@ func (s *PhotoStore) SearchPhotos(query string) ([]model.Photo, error) {
 }
 
 func (s *PhotoStore) GetPhotoByTag(tagName string) ([]model.Photo, error) {
-	rows, err := s.db.Query(`SELECT p.id, p.filename, p.path, p.caption, p.description, p.created_at FROM photos p JOIN photo_tags pt ON pt.photo_id = p.id JOIN tags t ON t.id = pt.tag_id WHERE t.name = ? ORDER BY p.created_at DESC`, tagName)
+	rows, err := s.db.Query(`SELECT p.`+photoCols+` FROM photos p JOIN photo_tags pt ON pt.photo_id = p.id JOIN tags t ON t.id = pt.tag_id WHERE t.name = ? ORDER BY p.created_at DESC`, tagName)
 	if err != nil {
 		return nil, err
 	}
@@ -144,8 +175,8 @@ func (s *PhotoStore) GetPhotoByTag(tagName string) ([]model.Photo, error) {
 
 	var photos []model.Photo
 	for rows.Next() {
-		var p model.Photo
-		if err := rows.Scan(&p.ID, &p.Filename, &p.Path, &p.Caption, &p.Description, &p.CreatedAt); err != nil {
+		p, err := scanPhoto(rows)
+		if err != nil {
 			return nil, err
 		}
 		photoTags, err := s.GetPhotoTags(p.ID)

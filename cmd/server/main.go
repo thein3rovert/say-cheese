@@ -57,6 +57,7 @@ func main() {
 	mux.HandleFunc("GET /api/photos/search", photoHandler.SearchPhotos)
 	mux.HandleFunc("POST /api/photos/upload", photoHandler.UploadPhoto)
 	mux.HandleFunc("GET /api/photos/{id}", photoHandler.GetPhoto)
+	mux.HandleFunc("PUT /api/photos/{id}", photoHandler.UpdatePhoto)
 	mux.HandleFunc("DELETE /api/photos/{id}", photoHandler.DeletePhoto)
 
 	// Static file server for photos (with cache-busting headers)

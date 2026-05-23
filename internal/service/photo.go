@@ -37,6 +37,10 @@ func (svc *PhotoService) SavePhoto(p *model.Photo) error {
 	return svc.store.SavePhoto(p)
 }
 
+func (svc *PhotoService) UpdatePhoto(p *model.Photo) error {
+	return svc.store.UpdatePhoto(p)
+}
+
 func (svc *PhotoService) AddTags(photoID string, tagNames []string) error {
 	for _, name := range tagNames {
 		tagID, err := svc.store.SaveTag(name)
