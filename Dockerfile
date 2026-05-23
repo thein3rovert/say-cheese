@@ -9,6 +9,10 @@ RUN bun run build
 # Build stage for backend
 FROM nixos/nix:latest AS backend-builder
 WORKDIR /app
+
+# Enable Nix experimental features
+RUN echo "experimental-features = nix-command flakes" >> /etc/nix/nix.conf
+
 COPY flake.nix flake.lock ./
 RUN nix develop --command echo "Nix environment ready"
 COPY . .
