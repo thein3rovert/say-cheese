@@ -14,9 +14,9 @@ export default function Gallery() {
   const isLoading = query ? loadingSearch : loadingAll
 
   return (
-    <div className="mx-auto max-w-[1600px] px-6 py-8">
-      {/* Search bar with neumorphic inset */}
-      <div className="mb-8">
+    <div className="px-[3px] pb-[3px]">
+      {/* Search bar */}
+      <div className="mb-4 px-3 pt-4">
         <input
           type="text"
           placeholder="Search photos..."
@@ -31,17 +31,32 @@ export default function Gallery() {
       )}
 
       {photos && photos.length > 0 && (
-        <div className="masonry-grid gap-4">
+        <div
+          className="grid gap-[3px]"
+          style={{
+            gridTemplateColumns: 'repeat(3, 1fr)',
+            gridAutoRows: 'calc((100vw - 6px) / 3 / (16/9))',
+          }}
+        >
           {photos.map((photo) => (
             <div
               key={photo.id}
-              className="group relative overflow-hidden rounded-2xl border border-white/5 bg-[var(--color-black-surface)] shadow-[var(--shadow-neu-black)] transition-all hover:shadow-[var(--shadow-neu-black-hover)]"
+              className="group relative h-full w-full cursor-pointer overflow-hidden rounded-[6px]"
+              style={{
+                boxShadow: 'var(--shadow-neu-black)',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.boxShadow = 'var(--shadow-neu-black-hover)'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.boxShadow = 'var(--shadow-neu-black)'
+              }}
             >
               <img
                 src={photoUrl(photo.path)}
                 alt={photo.caption}
                 loading="lazy"
-                className="w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                className="block h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
               />
               <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-4 opacity-0 transition-opacity group-hover:opacity-100">
                 <p className="text-sm font-medium text-white/90">{photo.caption}</p>
@@ -68,22 +83,6 @@ export default function Gallery() {
           No photos found
         </div>
       )}
-
-      <style>{`
-        .masonry-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-          grid-auto-rows: 10px;
-        }
-        .masonry-grid > div {
-          grid-row-end: span var(--span, 30);
-        }
-        @media (min-width: 768px) {
-          .masonry-grid {
-            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
-          }
-        }
-      `}</style>
     </div>
   )
 }

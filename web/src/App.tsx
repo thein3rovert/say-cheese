@@ -2,9 +2,9 @@ import Gallery from './components/Gallery'
 
 export default function App() {
   return (
-    <div className="min-h-screen bg-[var(--color-black-base)]">
+    <div className="min-h-screen w-screen bg-[var(--color-black-base)]">
       <header className="border-b border-white/5 px-6 py-4">
-        <div className="mx-auto flex max-w-[1600px] items-center justify-between">
+        <div className="flex items-center justify-between">
           <h1 className="text-lg font-medium tracking-tight text-white/90">
             gallery
           </h1>
