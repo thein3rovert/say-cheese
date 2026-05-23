@@ -35,7 +35,7 @@ export default function Gallery() {
             paddingRight: 'var(--spacing-4)',
             paddingTop: 'var(--spacing-3)',
             paddingBottom: 'var(--spacing-3)',
-            borderRadius: 'var(--radius-xl)',
+            borderRadius: 'var(--radius-xs)',
           }}
         />
       </div>
@@ -61,13 +61,13 @@ export default function Gallery() {
               key={photo.id}
               className="group relative h-full w-full cursor-pointer overflow-hidden rounded-(--photo-card-radius)"
               style={{
-                boxShadow: 'var(--photo-card-shadow)',
+                boxShadow: 'var(--shadow-neu-black-inset)',
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.boxShadow = 'var(--photo-card-shadow-hover)'
+                e.currentTarget.style.boxShadow = 'var(--shadow-neu-black-active)'
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.boxShadow = 'var(--photo-card-shadow)'
+                e.currentTarget.style.boxShadow = 'var(--shadow-neu-black-inset)'
               }}
             >
               <img
