@@ -3,7 +3,13 @@ import Gallery from './components/Gallery'
 export default function App() {
   return (
     <div className="min-h-screen w-screen bg-black-base" style={{ margin: 0, padding: 0 }}>
-      <header className="border-b border-white/5 px-6 py-4">
+      <header 
+        className="border-b border-white/5 py-4"
+        style={{
+          paddingLeft: 'var(--photo-grid-padding-x)',
+          paddingRight: 'var(--photo-grid-padding-x)',
+        }}
+      >
         <div className="flex items-center justify-between">
           <h1 className="text-lg font-medium tracking-tight text-white/90">
             say_cheese
