@@ -45,10 +45,27 @@ export function usePhotoSearch(query: string) {
   })
 }
 
+async function deletePhoto(id: string): Promise<void> {
+  const res = await fetch(`${API_BASE}/api/photos/${id}`, {
+    method: 'DELETE',
+  })
+  if (!res.ok) throw new Error('Failed to delete photo')
+}
+
 export function useUploadPhoto() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: uploadPhoto,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['photos'] })
+    },
+  })
+}
+
+export function useDeletePhoto() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: deletePhoto,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['photos'] })
     },

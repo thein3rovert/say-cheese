@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react'
-import { usePhotos, usePhotoSearch } from '../api/photos'
+import { usePhotos, usePhotoSearch, useDeletePhoto } from '../api/photos'
 import type { Photo, Tag } from '../api/photos'
 
 function photoUrl(path: string) {
@@ -9,9 +9,10 @@ function photoUrl(path: string) {
 interface LightboxProps {
   photo: Photo
   onClose: () => void
+  onDelete: (id: number) => void
 }
 
-function Lightbox({ photo, onClose }: LightboxProps) {
+function Lightbox({ photo, onClose, onDelete }: LightboxProps) {
   // Close on escape key
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -47,6 +48,21 @@ function Lightbox({ photo, onClose }: LightboxProps) {
         >
           <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+
+        {/* Delete button */}
+        <button
+          onClick={() => {
+            if (confirm('Delete this photo?')) {
+              onDelete(photo.id)
+            }
+          }}
+          className="absolute left-4 top-4 z-10 rounded-full bg-red-500/20 p-2 text-red-400 transition-colors hover:bg-red-500/30 hover:text-red-300"
+          style={{ backdropFilter: 'blur(8px)' }}
+        >
+          <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
           </svg>
         </button>
 
@@ -98,6 +114,7 @@ export default function Gallery() {
   const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null)
   const { data: allPhotos, isLoading: loadingAll } = usePhotos()
   const { data: searchResult, isLoading: loadingSearch } = usePhotoSearch(query)
+  const deletePhoto = useDeletePhoto()
 
   const photos = query ? searchResult?.photos : allPhotos
   const isLoading = query ? loadingSearch : loadingAll
@@ -109,6 +126,14 @@ export default function Gallery() {
   const handleCloseLightbox = useCallback(() => {
     setSelectedPhoto(null)
   }, [])
+
+  const handleDelete = useCallback((id: string) => {
+    deletePhoto.mutate(id, {
+      onSuccess: () => {
+        setSelectedPhoto(null)
+      },
+    })
+  }, [deletePhoto])
 
   return (
     <div style={{ padding: 0, margin: 0 }}>
@@ -202,7 +227,7 @@ export default function Gallery() {
 
       {/* Lightbox Modal */}
       {selectedPhoto && (
-        <Lightbox photo={selectedPhoto} onClose={handleCloseLightbox} />
+        <Lightbox photo={selectedPhoto} onClose={handleCloseLightbox} onDelete={handleDelete} />
       )}
     </div>
   )

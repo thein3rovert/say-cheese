@@ -4,7 +4,7 @@ export interface Tag {
 }
 
 export interface Photo {
-  id: number
+  id: string
   filename: string
   path: string
   caption: string
