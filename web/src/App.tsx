@@ -36,13 +36,26 @@ export default function App() {
         }}
       >
         <div className="flex items-center justify-between">
-          <h1 className="text-lg font-medium tracking-tight text-white/90">
+          <h1 
+            className="text-lg font-medium tracking-tight text-white/90"
+            style={{
+              padding: 'var(--spacing-2) var(--spacing-4)',
+              borderRadius: 'var(--radius-xs)',
+              boxShadow: 'var(--shadow-neu-black-inset)',
+              background: 'var(--color-black-base)',
+            }}
+          >
             say_cheese
           </h1>
           <div className="flex gap-4">
             <button
               onClick={handleUploadClick}
-              className="rounded-lg p-2 text-white/60 transition hover:text-white/90"
+              className="p-2 text-white/60 transition hover:text-white/90"
+              style={{
+                borderRadius: 'var(--radius-xs)',
+                boxShadow: 'var(--shadow-neu-black-inset)',
+                background: 'var(--color-black-base)',
+              }}
               aria-label="Upload"
               disabled={upload.isPending}
             >
@@ -51,7 +64,12 @@ export default function App() {
               </svg>
             </button>
             <button
-              className="rounded-lg p-2 text-white/60 transition hover:text-white/90"
+              className="p-2 text-white/60 transition hover:text-white/90"
+              style={{
+                borderRadius: 'var(--radius-xs)',
+                boxShadow: 'var(--shadow-neu-black-inset)',
+                background: 'var(--color-black-base)',
+              }}
               aria-label="RSS"
             >
               <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -59,7 +77,12 @@ export default function App() {
               </svg>
             </button>
             <button
-              className="rounded-lg p-2 text-white/60 transition hover:text-white/90"
+              className="p-2 text-white/60 transition hover:text-white/90"
+              style={{
+                borderRadius: 'var(--radius-xs)',
+                boxShadow: 'var(--shadow-neu-black-inset)',
+                background: 'var(--color-black-base)',
+              }}
               aria-label="Menu"
             >
               <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -364,6 +364,11 @@
   --photo-grid-padding-x:     32px;
   --photo-grid-padding-top:   8px;
 
+  /* Lightbox / Modal toolbar */
+  --modal-btn-size:           36px;
+  --modal-btn-gap:            var(--spacing-4);
+  --modal-btn-offset:         calc(var(--spacing-4) + var(--modal-btn-size) + var(--modal-btn-gap));
+
 }
 
 
