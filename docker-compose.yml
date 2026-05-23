@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  say-cheese:
+    build: .
+    ports:
+      - "7070:7070"
+    volumes:
+      - ./data:/app/data
+    environment:
+      - DATA_DIR=/app/data
+      - PORT=7070
+      - FRONTEND_DIR=/app/web/dist
+    restart: unless-stopped

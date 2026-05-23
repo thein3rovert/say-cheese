@@ -75,8 +75,27 @@ func main() {
 		w.Write([]byte(`{"status":"ok"}`))
 	})
 
+	// Serve frontend static files
+	frontendDir := os.Getenv("FRONTEND_DIR")
+	if frontendDir == "" {
+		frontendDir = "./web/dist"
+	}
+	// Serve static assets (JS, CSS, etc)
+	mux.Handle("/assets/", http.FileServer(http.Dir(frontendDir)))
+	// Serve index.html for all other routes (SPA routing)
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		// If it's an API or photos request, let it fall through
+		if strings.HasPrefix(r.URL.Path, "/api/") || strings.HasPrefix(r.URL.Path, "/photos/") {
+			http.NotFound(w, r)
+			return
+		}
+		// Serve index.html for all frontend routes
+		http.ServeFile(w, r, filepath.Join(frontendDir, "index.html"))
+	})
+
 	log.Printf("Gallery server starting on http://localhost:%s", port)
 	log.Printf("Data directory: %s", dataDir)
+	log.Printf("Frontend directory: %s", frontendDir)
 	log.Printf("API: http://localhost:%s/api/photos", port)
 	if err := http.ListenAndServe(":"+port, middleware.CORS(middleware.CustomLogger(mux))); err != nil {
 		log.Fatal(err)

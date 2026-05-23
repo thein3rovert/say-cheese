@@ -1,0 +1,17 @@
+When writing Tailwind v4 classes, always use named scale tokens instead of
+arbitrary values when a matching token exists.
+
+Examples:
+  rounded-md        NOT rounded-[6px]
+  rounded-lg        NOT rounded-[8px]
+  rounded-xl        NOT rounded-[12px]
+  text-sm           NOT text-[12px]
+  text-xs           NOT text-[11px]
+  p-4               NOT p-[16px]
+  gap-1             NOT gap-[4px]
+  gap-2             NOT gap-[8px]
+
+General rule: before using an arbitrary value like [Xpx], check if a
+named Tailwind utility exists for that value first. Only use arbitrary
+values [Xpx] when no named token matches — for example custom values
+like rounded-[22px] or text-[10px] that fall outside the default scale.
