@@ -52,6 +52,16 @@ async function deletePhoto(id: string): Promise<void> {
   if (!res.ok) throw new Error('Failed to delete photo')
 }
 
+async function updatePhoto(photo: Photo): Promise<Photo> {
+  const res = await fetch(`${API_BASE}/api/photos/${photo.id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(photo),
+  })
+  if (!res.ok) throw new Error('Failed to update photo')
+  return res.json()
+}
+
 export function useUploadPhoto() {
   const queryClient = useQueryClient()
   return useMutation({
@@ -66,6 +76,16 @@ export function useDeletePhoto() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: deletePhoto,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['photos'] })
+    },
+  })
+}
+
+export function useUpdatePhoto() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: updatePhoto,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['photos'] })
     },

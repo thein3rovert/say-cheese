@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react'
-import { usePhotos, usePhotoSearch, useDeletePhoto } from '../api/photos'
+import { usePhotos, usePhotoSearch, useDeletePhoto, useUpdatePhoto } from '../api/photos'
 import type { Photo, Tag } from '../api/photos'
 
 function photoUrl(path: string) {
@@ -9,11 +9,11 @@ function photoUrl(path: string) {
 interface LightboxProps {
   photo: Photo
   onClose: () => void
-  onDelete: (id: number) => void
+  onDelete: (id: string) => void
+  onEdit: (photo: Photo) => void
 }
 
-function Lightbox({ photo, onClose, onDelete }: LightboxProps) {
-  // Close on escape key
+function Lightbox({ photo, onClose, onDelete, onEdit }: LightboxProps) {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose()
@@ -43,11 +43,40 @@ function Lightbox({ photo, onClose, onDelete }: LightboxProps) {
         {/* Close button */}
         <button
           onClick={onClose}
-          className="absolute right-4 top-4 z-10 rounded-full bg-black-base/80 p-2 text-white/60 transition-colors hover:text-white/90"
-          style={{ backdropFilter: 'blur(8px)' }}
+          className="absolute top-4 z-10 rounded-full p-2 text-white/60 transition-colors hover:text-white/90"
+          style={{
+            right: 'var(--spacing-4)',
+            width: 'var(--modal-btn-size)',
+            height: 'var(--modal-btn-size)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            boxShadow: 'var(--shadow-neu-black-inset)',
+            background: 'var(--color-black-base)',
+          }}
         >
           <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+
+        {/* Edit button */}
+        <button
+          onClick={() => onEdit(photo)}
+          className="absolute top-4 z-10 rounded-full p-2 text-white/60 transition-colors hover:text-white/90"
+          style={{
+            right: 'var(--modal-btn-offset)',
+            width: 'var(--modal-btn-size)',
+            height: 'var(--modal-btn-size)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            boxShadow: 'var(--shadow-neu-black-inset)',
+            background: 'var(--color-black-base)',
+          }}
+        >
+          <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
           </svg>
         </button>
 
@@ -58,8 +87,17 @@ function Lightbox({ photo, onClose, onDelete }: LightboxProps) {
               onDelete(photo.id)
             }
           }}
-          className="absolute left-4 top-4 z-10 rounded-full bg-red-500/20 p-2 text-red-400 transition-colors hover:bg-red-500/30 hover:text-red-300"
-          style={{ backdropFilter: 'blur(8px)' }}
+          className="absolute top-4 z-10 rounded-full p-2 text-red-400 transition-colors hover:text-red-300"
+          style={{
+            left: 'var(--spacing-4)',
+            width: 'var(--modal-btn-size)',
+            height: 'var(--modal-btn-size)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            boxShadow: 'var(--shadow-neu-black-inset)',
+            background: 'var(--color-black-base)',
+          }}
         >
           <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -74,7 +112,7 @@ function Lightbox({ photo, onClose, onDelete }: LightboxProps) {
         />
 
         {/* Caption overlay at bottom */}
-        {(photo.caption || (photo.tags && photo.tags.length > 0)) && (
+        {(photo.caption || photo.camera || photo.location || (photo.tags && photo.tags.length > 0)) && (
           <div
             className="absolute inset-x-0 bottom-0 bg-linear-to-t from-black/90 via-black/60 to-transparent"
             style={{ padding: 'var(--spacing-6)' }}
@@ -82,6 +120,15 @@ function Lightbox({ photo, onClose, onDelete }: LightboxProps) {
             {photo.caption && (
               <p className="text-base font-medium text-white/90">{photo.caption}</p>
             )}
+            <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-white/60">
+              {photo.camera && <span>{photo.camera}</span>}
+              {photo.lens && <span>{photo.lens}</span>}
+              {photo.aperture && <span>{photo.aperture}</span>}
+              {photo.shutter_speed && <span>{photo.shutter_speed}</span>}
+              {photo.iso && <span>ISO {photo.iso}</span>}
+              {photo.location && <span>{photo.location}</span>}
+              {photo.date_taken && <span>{photo.date_taken}</span>}
+            </div>
             {photo.tags && photo.tags.length > 0 && (
               <div className="mt-3 flex flex-wrap gap-2">
                 {photo.tags.map((tag) => (
@@ -109,12 +156,245 @@ function Lightbox({ photo, onClose, onDelete }: LightboxProps) {
   )
 }
 
+interface EditModalProps {
+  photo: Photo
+  onClose: () => void
+  onSave: (photo: Photo) => void
+  isSaving: boolean
+}
+
+function EditModal({ photo, onClose, onSave, isSaving }: EditModalProps) {
+  const [form, setForm] = useState({
+    caption: photo.caption || '',
+    description: photo.description || '',
+    camera: photo.camera || '',
+    lens: photo.lens || '',
+    aperture: photo.aperture || '',
+    shutter_speed: photo.shutter_speed || '',
+    iso: photo.iso || '',
+    location: photo.location || '',
+    date_taken: photo.date_taken || '',
+  })
+
+  const handleChange = (field: string, value: string) => {
+    setForm((prev) => ({ ...prev, [field]: value }))
+  }
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    onSave({ ...photo, ...form })
+  }
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose()
+    }
+    document.addEventListener('keydown', handleKeyDown)
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown)
+      document.body.style.overflow = ''
+    }
+  }, [onClose])
+
+  const inputStyle: React.CSSProperties = {
+    background: 'var(--color-black-elevated)',
+    border: '1px solid rgba(255,255,255,0.05)',
+    borderRadius: 'var(--radius-sm)',
+    padding: 'var(--spacing-2) var(--spacing-3)',
+    color: 'rgba(255,255,255,0.9)',
+    fontSize: '0.875rem',
+    width: '100%',
+  }
+
+  const labelStyle: React.CSSProperties = {
+    display: 'block',
+    fontSize: '0.75rem',
+    color: 'rgba(255,255,255,0.5)',
+    marginBottom: 'var(--spacing-1)',
+    textTransform: 'uppercase' as const,
+    letterSpacing: '0.05em',
+  }
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black-base/90 backdrop-blur-sm"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose()
+      }}
+    >
+      <div
+        className="w-full max-w-lg overflow-hidden bg-black-surface"
+        style={{
+          borderRadius: 'var(--radius-lg)',
+          boxShadow: 'var(--shadow-neu-black-inset)',
+          maxHeight: '90vh',
+          overflowY: 'auto',
+        }}
+      >
+        <div
+          className="flex items-center justify-between border-b border-white/5"
+          style={{
+            padding: 'var(--spacing-4) var(--spacing-6)',
+          }}
+        >
+          <h2 className="text-base font-medium text-white/90">Edit Photo</h2>
+          <button
+            onClick={onClose}
+            className="text-white/60 transition-colors hover:text-white/90"
+          >
+            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} style={{ padding: 'var(--spacing-6)' }}>
+          <div className="space-y-4">
+            <div>
+              <label style={labelStyle}>Title</label>
+              <input
+                type="text"
+                value={form.caption}
+                onChange={(e) => handleChange('caption', e.target.value)}
+                style={inputStyle}
+                placeholder="EVENING WALKS"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label style={labelStyle}>Camera</label>
+                <input
+                  type="text"
+                  value={form.camera}
+                  onChange={(e) => handleChange('camera', e.target.value)}
+                  style={inputStyle}
+                  placeholder="FUJIFILM X-E4"
+                />
+              </div>
+              <div>
+                <label style={labelStyle}>Lens</label>
+                <input
+                  type="text"
+                  value={form.lens}
+                  onChange={(e) => handleChange('lens', e.target.value)}
+                  style={inputStyle}
+                  placeholder="23mm"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-3 gap-4">
+              <div>
+                <label style={labelStyle}>Aperture</label>
+                <input
+                  type="text"
+                  value={form.aperture}
+                  onChange={(e) => handleChange('aperture', e.target.value)}
+                  style={inputStyle}
+                  placeholder="f/2.8"
+                />
+              </div>
+              <div>
+                <label style={labelStyle}>Shutter</label>
+                <input
+                  type="text"
+                  value={form.shutter_speed}
+                  onChange={(e) => handleChange('shutter_speed', e.target.value)}
+                  style={inputStyle}
+                  placeholder="1/500s"
+                />
+              </div>
+              <div>
+                <label style={labelStyle}>ISO</label>
+                <input
+                  type="text"
+                  value={form.iso}
+                  onChange={(e) => handleChange('iso', e.target.value)}
+                  style={inputStyle}
+                  placeholder="400"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label style={labelStyle}>Location</label>
+                <input
+                  type="text"
+                  value={form.location}
+                  onChange={(e) => handleChange('location', e.target.value)}
+                  style={inputStyle}
+                  placeholder="Tokyo, Japan"
+                />
+              </div>
+              <div>
+                <label style={labelStyle}>Date Taken</label>
+                <input
+                  type="text"
+                  value={form.date_taken}
+                  onChange={(e) => handleChange('date_taken', e.target.value)}
+                  style={inputStyle}
+                  placeholder="4/14/2026"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label style={labelStyle}>Description</label>
+              <textarea
+                value={form.description}
+                onChange={(e) => handleChange('description', e.target.value)}
+                style={{ ...inputStyle, minHeight: '80px', resize: 'vertical' }}
+                placeholder="Add a description..."
+              />
+            </div>
+          </div>
+
+          <div
+            className="flex justify-end gap-3 border-t border-white/5"
+            style={{ marginTop: 'var(--spacing-6)', paddingTop: 'var(--spacing-4)' }}
+          >
+            <button
+              type="button"
+              onClick={onClose}
+              className="text-sm text-white/60 transition-colors hover:text-white/90"
+              style={{
+                padding: 'var(--spacing-2) var(--spacing-4)',
+                borderRadius: 'var(--radius-sm)',
+              }}
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={isSaving}
+              className="text-sm font-medium text-white/90 transition-colors hover:text-white"
+              style={{
+                padding: 'var(--spacing-2) var(--spacing-4)',
+                borderRadius: 'var(--radius-sm)',
+                background: 'var(--color-black-elevated)',
+                boxShadow: 'var(--shadow-neu-black-sm)',
+              }}
+            >
+              {isSaving ? 'Saving...' : 'Save'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  )
+}
+
 export default function Gallery() {
   const [query, setQuery] = useState('')
   const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null)
+  const [editingPhoto, setEditingPhoto] = useState<Photo | null>(null)
   const { data: allPhotos, isLoading: loadingAll } = usePhotos()
   const { data: searchResult, isLoading: loadingSearch } = usePhotoSearch(query)
   const deletePhoto = useDeletePhoto()
+  const updatePhoto = useUpdatePhoto()
 
   const photos = query ? searchResult?.photos : allPhotos
   const isLoading = query ? loadingSearch : loadingAll
@@ -127,6 +407,15 @@ export default function Gallery() {
     setSelectedPhoto(null)
   }, [])
 
+  const handleCloseEdit = useCallback(() => {
+    setEditingPhoto(null)
+  }, [])
+
+  const handleEdit = useCallback((photo: Photo) => {
+    setSelectedPhoto(null)
+    setEditingPhoto(photo)
+  }, [])
+
   const handleDelete = useCallback((id: string) => {
     deletePhoto.mutate(id, {
       onSuccess: () => {
@@ -134,6 +423,14 @@ export default function Gallery() {
       },
     })
   }, [deletePhoto])
+
+  const handleSave = useCallback((photo: Photo) => {
+    updatePhoto.mutate(photo, {
+      onSuccess: () => {
+        setEditingPhoto(null)
+      },
+    })
+  }, [updatePhoto])
 
   return (
     <div style={{ padding: 0, margin: 0 }}>
@@ -227,7 +524,22 @@ export default function Gallery() {
 
       {/* Lightbox Modal */}
       {selectedPhoto && (
-        <Lightbox photo={selectedPhoto} onClose={handleCloseLightbox} onDelete={handleDelete} />
+        <Lightbox
+          photo={selectedPhoto}
+          onClose={handleCloseLightbox}
+          onDelete={handleDelete}
+          onEdit={handleEdit}
+        />
+      )}
+
+      {/* Edit Modal */}
+      {editingPhoto && (
+        <EditModal
+          photo={editingPhoto}
+          onClose={handleCloseEdit}
+          onSave={handleSave}
+          isSaving={updatePhoto.isPending}
+        />
       )}
     </div>
   )
