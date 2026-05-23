@@ -37,9 +37,12 @@ gallery.json.bak
 *.db-shm
 *.db-wal
 
-# Photos directory (user content, keep directory but ignore files)
-photos/*
-!photos/.gitkeep
+# Data directory (photos + SQLite — mount as Docker volume)
+data/
+
+# Web
+node_modules/
+dist/
 
 # Nix
 result
