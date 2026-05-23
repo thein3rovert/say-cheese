@@ -18,7 +18,7 @@ func (svc *PhotoService) ListPhotos() ([]model.Photo, error) {
 	return svc.store.ListPhotos()
 }
 
-func (svc *PhotoService) GetPhoto(id int64) (*model.Photo, error) {
+func (svc *PhotoService) GetPhoto(id string) (*model.Photo, error) {
 	photos, err := svc.store.ListPhotos()
 	if err != nil {
 		return nil, err
@@ -37,7 +37,7 @@ func (svc *PhotoService) SavePhoto(p *model.Photo) error {
 	return svc.store.SavePhoto(p)
 }
 
-func (svc *PhotoService) AddTags(photoID int64, tagNames []string) error {
+func (svc *PhotoService) AddTags(photoID string, tagNames []string) error {
 	for _, name := range tagNames {
 		tagID, err := svc.store.SaveTag(name)
 		if err != nil {
@@ -59,4 +59,8 @@ func (svc *PhotoService) Search(query string) ([]model.Photo, error) {
 
 func (svc *PhotoService) GetByTag(tagName string) ([]model.Photo, error) {
 	return svc.store.GetPhotoByTag(tagName)
+}
+
+func (svc *PhotoService) DeletePhoto(id string) error {
+	return svc.store.DeletePhoto(id)
 }

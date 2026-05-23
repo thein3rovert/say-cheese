@@ -3,6 +3,7 @@ package handler
 import (
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -32,15 +33,9 @@ func (h *PhotoHandler) ListPhotos(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *PhotoHandler) GetPhoto(w http.ResponseWriter, r *http.Request) {
-	idStr := r.PathValue("id")
-	if idStr == "" {
+	id := r.PathValue("id")
+	if id == "" {
 		respondError(w, http.StatusBadRequest, "photo ID is required")
-		return
-	}
-
-	var id int64
-	if _, err := fmt.Sscanf(idStr, "%d", &id); err != nil {
-		respondError(w, http.StatusBadRequest, "invalid photo ID")
 		return
 	}
 
@@ -113,6 +108,42 @@ func (h *PhotoHandler) UploadPhoto(w http.ResponseWriter, r *http.Request) {
 	}
 
 	respondJSON(w, http.StatusCreated, photo)
+}
+
+func (h *PhotoHandler) DeletePhoto(w http.ResponseWriter, r *http.Request) {
+	id := r.PathValue("id")
+	if id == "" {
+		respondError(w, http.StatusBadRequest, "photo ID is required")
+		return
+	}
+
+	photo, err := h.svc.GetPhoto(id)
+	if err != nil {
+		respondError(w, http.StatusInternalServerError, "failed to get photo")
+		return
+	}
+	if photo == nil {
+		respondError(w, http.StatusNotFound, "photo not found")
+		return
+	}
+
+	// Delete file from disk
+	dataDir := os.Getenv("DATA_DIR")
+	if dataDir == "" {
+		dataDir = "./data"
+	}
+	filePath := filepath.Join(dataDir, photo.Path)
+	if err := os.Remove(filePath); err != nil && !os.IsNotExist(err) {
+		log.Printf("Warning: could not delete file %s: %v", filePath, err)
+	}
+
+	// Delete from DB
+	if err := h.svc.DeletePhoto(id); err != nil {
+		respondError(w, http.StatusInternalServerError, "failed to delete photo")
+		return
+	}
+
+	respondJSON(w, http.StatusOK, map[string]string{"status": "deleted"})
 }
 
 func (h *PhotoHandler) SearchPhotos(w http.ResponseWriter, r *http.Request) {

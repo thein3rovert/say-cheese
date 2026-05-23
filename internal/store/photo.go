@@ -5,6 +5,7 @@ import (
 	"log"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/thein3rovert/gallery/internal/model"
 )
 
@@ -17,18 +18,20 @@ func NewPhotoStore(db *sql.DB) *PhotoStore {
 }
 
 func (s *PhotoStore) SavePhoto(p *model.Photo) error {
+	if p.ID == "" {
+		p.ID = uuid.NewString()
+	}
 	p.CreatedAt = time.Now()
-	res, err := s.db.Exec(
-		`INSERT INTO photos (filename, path, caption, description, created_at) VALUES (?, ?, ?, ?, ?)`,
-		p.Filename, p.Path, p.Caption, p.Description, p.CreatedAt,
+	_, err := s.db.Exec(
+		`INSERT INTO photos (id, filename, path, caption, description, created_at) VALUES (?, ?, ?, ?, ?, ?)`,
+		p.ID, p.Filename, p.Path, p.Caption, p.Description, p.CreatedAt,
 	)
 	if err != nil {
 		log.Printf("SavePhoto error: %v", err)
 		return err
 	}
-	p.ID, err = res.LastInsertId()
-	log.Printf("SavePhoto: id=%d filename=%s", p.ID, p.Filename)
-	return err
+	log.Printf("SavePhoto: id=%s filename=%s", p.ID, p.Filename)
+	return nil
 }
 
 func (s *PhotoStore) ListPhotos() ([]model.Photo, error) {
@@ -59,7 +62,7 @@ func (s *PhotoStore) SaveTag(name string) (int64, error) {
 	return id, err
 }
 
-func (s *PhotoStore) AddTagToPhoto(photoID, tagID int64) error {
+func (s *PhotoStore) AddTagToPhoto(photoID string, tagID int64) error {
 	_, err := s.db.Exec(`INSERT OR IGNORE INTO photo_tags (photo_id, tag_id) VALUES (?, ?)`, photoID, tagID)
 	return err
 }
@@ -82,7 +85,7 @@ func (s *PhotoStore) ListTags() ([]model.Tag, error) {
 	return tags, rows.Err()
 }
 
-func (s *PhotoStore) GetPhotoTags(photoID int64) ([]model.Tag, error) {
+func (s *PhotoStore) GetPhotoTags(photoID string) ([]model.Tag, error) {
 	rows, err := s.db.Query(`SELECT t.id, t.name FROM tags t JOIN photo_tags pt ON pt.tag_id = t.id WHERE pt.photo_id = ?`, photoID)
 	if err != nil {
 		return nil, err
@@ -98,6 +101,15 @@ func (s *PhotoStore) GetPhotoTags(photoID int64) ([]model.Tag, error) {
 		tags = append(tags, t)
 	}
 	return tags, rows.Err()
+}
+
+func (s *PhotoStore) DeletePhoto(id string) error {
+	_, err := s.db.Exec(`DELETE FROM photo_tags WHERE photo_id = ?`, id)
+	if err != nil {
+		return err
+	}
+	_, err = s.db.Exec(`DELETE FROM photos WHERE id = ?`, id)
+	return err
 }
 
 func (s *PhotoStore) SearchPhotos(query string) ([]model.Photo, error) {

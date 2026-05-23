@@ -57,9 +57,16 @@ func main() {
 	mux.HandleFunc("GET /api/photos/search", photoHandler.SearchPhotos)
 	mux.HandleFunc("POST /api/photos/upload", photoHandler.UploadPhoto)
 	mux.HandleFunc("GET /api/photos/{id}", photoHandler.GetPhoto)
+	mux.HandleFunc("DELETE /api/photos/{id}", photoHandler.DeletePhoto)
 
-	// Static file server for photos
-	mux.Handle("/photos/", http.StripPrefix("/photos/", http.FileServer(http.Dir(photosDir))))
+	// Static file server for photos (with cache-busting headers)
+	photoServer := http.StripPrefix("/photos/", http.FileServer(http.Dir(photosDir)))
+	mux.HandleFunc("/photos/", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
+		w.Header().Set("Pragma", "no-cache")
+		w.Header().Set("Expires", "0")
+		photoServer.ServeHTTP(w, r)
+	})
 
 	// Health check
 	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
@@ -75,7 +82,7 @@ func main() {
 	}
 }
 
-// scanPhotos walks the photos directory and registers any unregistered files
+// scanPhotos walks the photos directory, registers new files, and removes orphaned DB entries
 func scanPhotos(ps *store.PhotoStore, photosDir string) {
 	if _, err := os.Stat(photosDir); os.IsNotExist(err) {
 		log.Println("photos directory does not exist, skipping scan")
@@ -88,26 +95,43 @@ func scanPhotos(ps *store.PhotoStore, photosDir string) {
 		return
 	}
 
-	registered := make(map[string]bool)
-	for _, p := range existing {
-		registered[p.Path] = true
-	}
-
+	// Build set of files on disk
 	entries, err := os.ReadDir(photosDir)
 	if err != nil {
 		log.Printf("Warning: could not read photos dir: %v", err)
 		return
 	}
 
+	onDisk := make(map[string]bool)
 	for _, entry := range entries {
-		if entry.IsDir() {
+		if entry.IsDir() || entry.Name() == ".gitkeep" {
 			continue
 		}
-		if entry.Name() == ".gitkeep" {
+		onDisk[filepath.Join("photos", entry.Name())] = true
+	}
+
+	// Remove orphaned DB entries (photos deleted from disk)
+	for _, p := range existing {
+		if !onDisk[p.Path] {
+			if err := ps.DeletePhoto(p.ID); err != nil {
+				log.Printf("Failed to remove orphaned photo %s: %v", p.Path, err)
+			} else {
+				log.Printf("Removed orphaned photo: %s", p.Path)
+			}
+		}
+	}
+
+	// Register new files
+	registered := make(map[string]bool)
+	for _, p := range existing {
+		registered[p.Path] = true
+	}
+
+	for _, entry := range entries {
+		if entry.IsDir() || entry.Name() == ".gitkeep" {
 			continue
 		}
 		
-		// Store relative path in DB for portability
 		relPath := filepath.Join("photos", entry.Name())
 		if registered[relPath] {
 			continue
