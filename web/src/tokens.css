@@ -360,8 +360,10 @@
   /* Photo gallery */
   --photo-card-shadow:        var(--shadow-neu-black);
   --photo-card-shadow-hover:  var(--shadow-neu-black-hover);
-  --photo-card-radius:        4px;
-  --photo-grid-gap:           3px;
+  --photo-card-radius:        1px;
+  --photo-grid-gap:           8px;
+  --photo-grid-padding-x:     32px;
+  --photo-grid-padding-top:   8px;
 
 }
 

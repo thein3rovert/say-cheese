@@ -16,13 +16,27 @@ export default function Gallery() {
   return (
     <div style={{ padding: 0, margin: 0 }}>
       {/* Search bar */}
-      <div className="mb-4 px-3 pt-4">
+      <div
+        style={{
+          marginBottom: 'var(--spacing-4)',
+          paddingLeft: 'var(--photo-grid-padding-x)',
+          paddingRight: 'var(--photo-grid-padding-x)',
+          paddingTop: 'var(--spacing-4)',
+        }}
+      >
         <input
           type="text"
           placeholder="Search photos..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          className="w-full max-w-md rounded-xl border border-white/5 bg-black-surface px-4 py-3 text-sm text-white/90 shadow-(--shadow-neu-black-inset-sm) placeholder:text-white/30 focus:border-white/10 focus:outline-none focus:shadow-(--shadow-neu-black-active)"
+          className="w-full max-w-md border border-white/5 bg-black-surface text-sm text-white/90 shadow-(--shadow-neu-black-inset) placeholder:text-white/30 focus:border-white/10 focus:outline-none focus:shadow-(--shadow-neu-black-active)"
+          style={{
+            paddingLeft: 'var(--spacing-4)',
+            paddingRight: 'var(--spacing-4)',
+            paddingTop: 'var(--spacing-3)',
+            paddingBottom: 'var(--spacing-3)',
+            borderRadius: 'var(--radius-xl)',
+          }}
         />
       </div>
 
@@ -32,11 +46,14 @@ export default function Gallery() {
 
       {photos && photos.length > 0 && (
         <div
-          className="grid gap-(--photo-grid-gap)"
+          className="grid flex-1"
           style={{
             gridTemplateColumns: 'repeat(3, 1fr)',
-            gridAutoRows: 'calc((100vw - calc(var(--photo-grid-gap) * 2)) / 3 / (16/9))',
-            marginTop: 'var(--photo-grid-gap)',
+            gridAutoRows: 'calc((100vw - (var(--photo-grid-padding-x) * 2) - (var(--photo-grid-gap) * 2)) / 3 / (16/9))',
+            gap: 'var(--photo-grid-gap)',
+            paddingTop: 'var(--photo-grid-padding-top)',
+            paddingLeft: 'var(--photo-grid-padding-x)',
+            paddingRight: 'var(--photo-grid-padding-x)',
           }}
         >
           {photos.map((photo) => (

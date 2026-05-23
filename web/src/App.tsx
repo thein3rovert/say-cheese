@@ -6,7 +6,7 @@ export default function App() {
       <header className="border-b border-white/5 px-6 py-4">
         <div className="flex items-center justify-between">
           <h1 className="text-lg font-medium tracking-tight text-white/90">
-            gallery
+            say_cheese
           </h1>
           <div className="flex gap-4">
             <button
