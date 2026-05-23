@@ -1,0 +1,49 @@
+@theme {
+  /* ── 🖤 BLACK SURFACE ────────────────────────────────────── */
+  --color-black-base: #0a0a0a;
+  --color-black-surface: #141414;
+  --color-black-raised: #1a1a1a;
+
+  /* ── 🌑 BLACK NEUMORPHIC SHADOWS ─────────────────────────── */
+  --shadow-neu-black:
+    4px -4px 12px #1f1f1f,
+    -4px 4px 8px #000000;
+
+  --shadow-neu-black-sm:
+    3px -3px 8px #1a1a1a,
+    -3px 3px 6px #000000;
+
+  --shadow-neu-black-lg:
+    6px -6px 18px #222222,
+    -6px 6px 14px #000000;
+
+  --shadow-neu-black-hover:
+    6px -6px 18px #222222,
+    -6px 6px 14px #000000;
+
+  --shadow-neu-black-inset:
+    inset 4px -4px 12px #000000,
+    inset -4px 4px 10px #202020;
+
+  --shadow-neu-black-inset-sm:
+    inset 2px -2px 6px #000000,
+    inset -2px 2px 5px #1a1a1a;
+
+  --shadow-neu-black-active:
+    4px -4px 12px #1f1f1f,
+    -4px 4px 8px #000000,
+    0 0 0 1px rgba(123, 140, 222, 0.15);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: var(--color-black-base);
+  color: #e5e5e5;
+  -webkit-font-smoothing: antialiased;
+}
