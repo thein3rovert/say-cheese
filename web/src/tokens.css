@@ -1,49 +1,610 @@
-@theme {
-  /* ── 🖤 BLACK SURFACE ────────────────────────────────────── */
-  --color-black-base: #0a0a0a;
-  --color-black-surface: #141414;
-  --color-black-raised: #1a1a1a;
+/* ============================================================
+   VOID UI — Complete Design Token System
+   Tailwind v4 @theme configuration
+   Dark neumorphic · DM Sans · Obsidian + Black surfaces
+   ============================================================
+   Usage in Tailwind v4:
+   Always use (--token-name) NOT [var(--token-name)]
+   Always use named scale tokens NOT arbitrary [Xpx] values
+   ============================================================ */
 
-  /* ── 🌑 BLACK NEUMORPHIC SHADOWS ─────────────────────────── */
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@theme {
+
+  /* ══════════════════════════════════════════════════════════
+     🎨 OBSIDIAN SURFACE — primary app theme
+     Base: #1a1a1e · for dashboards, apps, tools
+     ══════════════════════════════════════════════════════════ */
+
+  --color-obsidian:   #1a1a1e;   /* page / root background      */
+  --color-surface-1:  #1e1e24;   /* cards, sidebar, topbar      */
+  --color-surface-2:  #24242c;   /* nested cards, active states */
+  --color-surface-3:  #2c2c36;   /* bars, avatars, deep fills   */
+
+  /* Interactive overlays — apply over any obsidian surface */
+  --color-bg-hover:    rgba(255, 255, 255, 0.03);
+  --color-bg-selected: rgba(255, 255, 255, 0.05);
+  --color-bg-active:   rgba(255, 255, 255, 0.07);
+
+  /* ══════════════════════════════════════════════════════════
+     🖤 BLACK SURFACE — gallery, portfolio, media apps
+     Base: #000000 · for photo/video/media contexts
+     ══════════════════════════════════════════════════════════ */
+
+  --color-black-base:    #000000;
+  --color-black-surface: #141414;
+  --color-black-raised:  #1a1a1a;
+
+  /* ══════════════════════════════════════════════════════════
+     🖌️ PALETTE
+     ══════════════════════════════════════════════════════════ */
+
+  --color-steel:  #282d38;
+  --color-stormy: #414553;
+  --color-mist:   #606678;
+
+  /* ══════════════════════════════════════════════════════════
+     ✏️ TEXT
+     ══════════════════════════════════════════════════════════ */
+
+  --color-text-primary:   #eeeef2;
+  --color-text-secondary: #8a8a9a;
+  --color-text-muted:     #4a4a5a;
+  --color-text-ghost:     #2e2e38;
+
+  /* Black surface text — lighter muted since base is darker */
+  --color-text-muted-black: #3a3a3a;
+
+  /* ══════════════════════════════════════════════════════════
+     💡 ACCENT
+     ══════════════════════════════════════════════════════════ */
+
+  --color-accent:       #7b8cde;
+  --color-accent-hover: #9aaae8;
+  --color-accent-dim:   rgba(123, 140, 222, 0.10);
+  --color-accent-muted: rgba(123, 140, 222, 0.06);
+
+  /* ══════════════════════════════════════════════════════════
+     🚦 SEMANTIC / STATUS
+     ══════════════════════════════════════════════════════════ */
+
+  --color-success:      #7ecb98;
+  --color-success-dim:  rgba(126, 203, 152, 0.10);
+
+  --color-warning:      #e0a96d;
+  --color-warning-dim:  rgba(224, 169, 109, 0.10);
+
+  --color-danger:       #e07b7b;
+  --color-danger-dim:   rgba(224, 123, 123, 0.10);
+
+  --color-info:         #7bb8de;
+  --color-info-dim:     rgba(123, 184, 222, 0.10);
+
+  /* ══════════════════════════════════════════════════════════
+     🌑 OBSIDIAN NEUMORPHIC SHADOWS
+     Base: #1a1a1e
+     Dark side → #0a0a0c  |  Light side → #272730
+     ══════════════════════════════════════════════════════════ */
+
+  --shadow-neu:
+    -5px 5px 12px #0a0a0c,
+     5px -5px 12px #272730;
+
+  --shadow-neu-sm:
+    -3px 3px 8px #0a0a0c,
+     3px -3px 8px #272730;
+
+  --shadow-neu-lg:
+    -8px 8px 20px #080809,
+     8px -8px 20px #2e2e38;
+
+  --shadow-neu-inset:
+    inset -3px 3px 8px #0a0a0c,
+    inset  3px -3px 8px #272730;
+
+  --shadow-neu-inset-sm:
+    inset -2px 2px 5px #0a0a0c,
+    inset  2px -2px 5px #232330;
+
+  --shadow-neu-active:
+    -5px 5px 12px #0a0a0c,
+     5px -5px 12px #272730,
+     0 0 0 1px rgba(123, 140, 222, 0.15);
+
+  /* ══════════════════════════════════════════════════════════
+     🖤 BLACK NEUMORPHIC SHADOWS
+     Base: #000000 / #141414
+     Dark side → #000000  |  Light side → #1f1f1f–#272727
+     ══════════════════════════════════════════════════════════ */
+
   --shadow-neu-black:
-    4px -4px 12px #1f1f1f,
-    -4px 4px 8px #000000;
+     4px -4px 12px #1f1f1f,
+    -4px  4px  8px #000000;
 
   --shadow-neu-black-sm:
-    3px -3px 8px #1a1a1a,
-    -3px 3px 6px #000000;
+     3px -3px 8px #1a1a1a,
+    -3px  3px 6px #000000;
 
   --shadow-neu-black-lg:
-    6px -6px 18px #222222,
-    -6px 6px 14px #000000;
+     6px -6px 18px #222222,
+    -6px  6px 14px #000000;
 
   --shadow-neu-black-hover:
-    6px -6px 18px #222222,
-    -6px 6px 14px #000000;
+     6px -6px 18px #242424,
+    -6px  6px 16px #000000;
 
   --shadow-neu-black-inset:
-    inset 4px -4px 12px #000000,
-    inset -4px 4px 10px #202020;
+    inset  4px -4px 12px #000000,
+    inset -4px  4px 10px #202020;
 
   --shadow-neu-black-inset-sm:
-    inset 2px -2px 6px #000000,
-    inset -2px 2px 5px #1a1a1a;
+    inset  2px -2px 6px #000000,
+    inset -2px  2px 5px #1a1a1a;
 
   --shadow-neu-black-active:
-    4px -4px 12px #1f1f1f,
-    -4px 4px 8px #000000,
-    0 0 0 1px rgba(123, 140, 222, 0.15);
+     4px -4px 12px #1f1f1f,
+    -4px  4px  8px #000000,
+     0 0 0 1px rgba(123, 140, 222, 0.15);
+
+  /* ══════════════════════════════════════════════════════════
+     💜 ACCENT SHADOWS
+     ══════════════════════════════════════════════════════════ */
+
+  --shadow-accent:
+    -3px 3px 10px rgba(60, 70, 160, 0.50),
+     3px -3px 10px rgba(180, 190, 255, 0.15);
+
+  --shadow-accent-sm:
+    -3px 3px 8px rgba(60, 70, 160, 0.40),
+     3px -3px 8px rgba(180, 190, 255, 0.10);
+
+  /* ══════════════════════════════════════════════════════════
+     🪟 OVERLAY SHADOWS — modals, dropdowns, tooltips
+     ══════════════════════════════════════════════════════════ */
+
+  --shadow-overlay-sm: 0 4px 12px rgba(0, 0, 0, 0.70);
+  --shadow-overlay-md: 0 8px 24px rgba(0, 0, 0, 0.85);
+  --shadow-overlay-lg: 0 16px 48px rgba(0, 0, 0, 0.95);
+
+  /* ══════════════════════════════════════════════════════════
+     🔤 TYPOGRAPHY
+     ══════════════════════════════════════════════════════════ */
+
+  --font-sans: 'DM Sans', -apple-system, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', ui-monospace, monospace;
+
+  /* Scale */
+  --text-xxs:  10px;   /* captions, labels          */
+  --text-xs:   11px;   /* small labels, badges       */
+  --text-sm:   12px;   /* secondary text, meta       */
+  --text-base: 13px;   /* body / default             */
+  --text-md:   14px;   /* slightly larger body       */
+  --text-lg:   16px;   /* section titles             */
+  --text-xl:   20px;   /* page subtitles             */
+  --text-2xl:  28px;   /* page titles                */
+  --text-3xl:  44px;   /* hero / display             */
+
+  /* Weights */
+  --font-light:    300;
+  --font-normal:   400;
+  --font-medium:   500;
+  --font-semibold: 600;
+  --font-bold:     700;
+
+  /* ══════════════════════════════════════════════════════════
+     📐 BORDER RADIUS
+     Named scale — use these, NOT arbitrary [Xpx] values
+     ══════════════════════════════════════════════════════════ */
+
+  --radius-xs:   4px;    /* tight elements, tags       */
+  --radius-sm:   6px;    /* small buttons, inputs      */
+  --radius-md:   8px;    /* standard buttons, cards    */
+  --radius-lg:   12px;   /* larger cards               */
+  --radius-xl:   16px;   /* panels, modals             */
+  --radius-2xl:  20px;   /* large panels               */
+  --radius-neu:  22px;   /* neumorphic cards           */
+  --radius-3xl:  28px;   /* page root wrapper          */
+  --radius-full: 9999px; /* pills, badges, dots        */
+
+  /* ══════════════════════════════════════════════════════════
+     📏 SPACING — strict 4px grid
+     Named scale — use these, NOT arbitrary [Xpx] values
+     ══════════════════════════════════════════════════════════ */
+
+  --spacing-px:  1px;
+  --spacing-0h:  2px;
+  --spacing-1:   4px;
+  --spacing-1h:  6px;
+  --spacing-2:   8px;
+  --spacing-3:   12px;
+  --spacing-4:   16px;
+  --spacing-5:   20px;
+  --spacing-6:   24px;
+  --spacing-8:   32px;
+  --spacing-10:  40px;
+  --spacing-12:  48px;
+  --spacing-16:  64px;
+  --spacing-20:  80px;
+
+  /* ══════════════════════════════════════════════════════════
+     📦 COMPONENT SIZING
+     ══════════════════════════════════════════════════════════ */
+
+  --height-titlebar:     36px;
+  --height-topbar:       52px;
+  --height-panel-header: 32px;
+  --height-statusbar:    28px;
+
+  --height-btn:          34px;   /* default button             */
+  --height-btn-sm:       28px;   /* small button               */
+  --height-btn-lg:       40px;   /* large button               */
+
+  --height-input:        34px;   /* default input              */
+  --height-input-sm:     28px;   /* compact input              */
+
+  --height-row:          36px;   /* table / list row           */
+  --height-row-sm:       28px;   /* compact row                */
+  --height-nav-item:     36px;   /* sidebar nav item           */
+
+  --width-sidebar:       196px;  /* full sidebar               */
+  --width-sidebar-sm:    56px;   /* collapsed / icon sidebar   */
+
+  /* ══════════════════════════════════════════════════════════
+     🎬 EASING CURVES
+     ══════════════════════════════════════════════════════════
+     spring    → bouncy pop (modals, scale in)
+     out-expo  → smooth overlay fade-in
+     apple     → drawers, sheets, sidebars
+     standard  → subtle fades, content changes
+     emphatic  → big movement, use sparingly
+     ══════════════════════════════════════════════════════════ */
+
+  --ease-spring:   cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1.00, 0.30, 1);
+  --ease-apple:    cubic-bezier(0.32, 0.72, 0.00, 1);
+  --ease-standard: cubic-bezier(0.40, 0.00, 0.20, 1);
+  --ease-emphatic: cubic-bezier(0.20, 0.00, 0.00, 1);
+
+  /* Durations — pair with curves above */
+  --duration-fast:  140ms;   /* hover states, small transitions  */
+  --duration-base:  220ms;   /* standard transitions             */
+  --duration-slow:  320ms;   /* modals, drawers                  */
+  --duration-xslow: 420ms;   /* page transitions                 */
+
+  /* ══════════════════════════════════════════════════════════
+     🗂️ Z-INDEX SCALE
+     ══════════════════════════════════════════════════════════ */
+
+  --z-base:     0;
+  --z-raised:   10;
+  --z-dropdown: 50;
+  --z-sticky:   60;
+  --z-overlay:  100;
+  --z-modal:    200;
+  --z-toast:    300;
+  --z-tooltip:  400;
+  --z-max:      9999;
+
+  /* ══════════════════════════════════════════════════════════
+     🧩 COMPONENT TOKENS
+     Composed from primitives above
+     ══════════════════════════════════════════════════════════ */
+
+  /* Sidebar */
+  --sidebar-bg:           var(--color-surface-1);
+  --sidebar-shadow:       var(--shadow-neu);
+  --sidebar-radius:       var(--radius-neu);
+  --sidebar-width:        var(--width-sidebar);
+  --sidebar-width-sm:     var(--width-sidebar-sm);
+
+  /* Nav items */
+  --nav-height:           var(--height-nav-item);
+  --nav-radius:           var(--radius-md);
+  --nav-active-bg:        var(--color-surface-2);
+  --nav-active-shadow:    var(--shadow-neu-active);
+  --nav-active-color:     var(--color-accent);
+
+  /* Cards — obsidian */
+  --card-bg:              var(--color-surface-1);
+  --card-shadow:          var(--shadow-neu);
+  --card-radius:          var(--radius-neu);
+  --card-padding:         var(--spacing-4);
+
+  /* Cards — black surface */
+  --card-black-bg:        var(--color-black-surface);
+  --card-black-shadow:    var(--shadow-neu-black);
+  --card-black-radius:    var(--radius-lg);
+
+  /* Topbar */
+  --topbar-bg:            var(--color-surface-1);
+  --topbar-shadow:        var(--shadow-neu);
+  --topbar-radius:        var(--radius-neu);
+  --topbar-height:        var(--height-topbar);
+
+  /* Buttons */
+  --btn-height:           var(--height-btn);
+  --btn-height-sm:        var(--height-btn-sm);
+  --btn-height-lg:        var(--height-btn-lg);
+  --btn-radius:           var(--radius-md);
+  --btn-ghost-bg:         var(--color-surface-2);
+  --btn-ghost-shadow:     var(--shadow-neu-sm);
+  --btn-primary-bg:       var(--color-accent);
+  --btn-primary-shadow:   var(--shadow-accent);
+
+  /* Inputs */
+  --input-height:         var(--height-input);
+  --input-height-sm:      var(--height-input-sm);
+  --input-radius:         var(--radius-md);
+  --input-bg:             var(--color-surface-2);
+  --input-shadow:         var(--shadow-neu-inset);
+  --input-focus-shadow:   var(--shadow-neu-inset), 0 0 0 1px var(--color-accent-dim);
+
+  /* Activity rows */
+  --activity-bg:          var(--color-surface-2);
+  --activity-shadow:      var(--shadow-neu-sm);
+  --activity-radius:      var(--radius-md);
+
+  /* Badges */
+  --badge-radius:             var(--radius-full);
+  --badge-success-bg:         var(--color-success-dim);
+  --badge-success-color:      var(--color-success);
+  --badge-warning-bg:         var(--color-warning-dim);
+  --badge-warning-color:      var(--color-warning);
+  --badge-danger-bg:          var(--color-danger-dim);
+  --badge-danger-color:       var(--color-danger);
+  --badge-info-bg:            var(--color-info-dim);
+  --badge-info-color:         var(--color-info);
+
+  /* Photo gallery */
+  --photo-card-shadow:        var(--shadow-neu-black);
+  --photo-card-shadow-hover:  var(--shadow-neu-black-hover);
+  --photo-card-radius:        4px;
+  --photo-grid-gap:           3px;
+
 }
 
-* {
+
+/* ============================================================
+   GLOBAL BASE
+   ============================================================ */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  background: var(--color-obsidian);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
 }
 
-body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  background: var(--color-black-base);
-  color: #e5e5e5;
-  -webkit-font-smoothing: antialiased;
+/* hide horizontal scrollbar */
+*::-webkit-scrollbar:horizontal { height: 0; display: none; }
+
+/* thin vertical scrollbar */
+*::-webkit-scrollbar { width: 4px; }
+*::-webkit-scrollbar-thumb { background: var(--color-surface-3); border-radius: var(--radius-full); }
+*::-webkit-scrollbar-track { background: transparent; }
+
+
+/* ============================================================
+   UTILITY CLASSES
+   ============================================================ */
+
+/* ── Surfaces ── */
+.bg-obsidian       { background-color: var(--color-obsidian); }
+.bg-surface-1      { background-color: var(--color-surface-1); }
+.bg-surface-2      { background-color: var(--color-surface-2); }
+.bg-surface-3      { background-color: var(--color-surface-3); }
+.bg-black-base     { background-color: var(--color-black-base); }
+.bg-black-surface  { background-color: var(--color-black-surface); }
+.bg-black-raised   { background-color: var(--color-black-raised); }
+
+/* ── Text ── */
+.text-primary      { color: var(--color-text-primary); }
+.text-secondary    { color: var(--color-text-secondary); }
+.text-muted        { color: var(--color-text-muted); }
+.text-accent       { color: var(--color-accent); }
+.text-success      { color: var(--color-success); }
+.text-warning      { color: var(--color-warning); }
+.text-danger       { color: var(--color-danger); }
+.text-info         { color: var(--color-info); }
+
+/* ── Obsidian shadows ── */
+.shadow-neu           { box-shadow: var(--shadow-neu); }
+.shadow-neu-sm        { box-shadow: var(--shadow-neu-sm); }
+.shadow-neu-lg        { box-shadow: var(--shadow-neu-lg); }
+.shadow-neu-inset     { box-shadow: var(--shadow-neu-inset); }
+.shadow-neu-inset-sm  { box-shadow: var(--shadow-neu-inset-sm); }
+.shadow-neu-active    { box-shadow: var(--shadow-neu-active); }
+
+/* ── Black shadows ── */
+.shadow-neu-black         { box-shadow: var(--shadow-neu-black); }
+.shadow-neu-black-sm      { box-shadow: var(--shadow-neu-black-sm); }
+.shadow-neu-black-lg      { box-shadow: var(--shadow-neu-black-lg); }
+.shadow-neu-black-hover   { box-shadow: var(--shadow-neu-black-hover); }
+.shadow-neu-black-inset   { box-shadow: var(--shadow-neu-black-inset); }
+.shadow-neu-black-active  { box-shadow: var(--shadow-neu-black-active); }
+
+/* ── Accent shadows ── */
+.shadow-accent     { box-shadow: var(--shadow-accent); }
+.shadow-accent-sm  { box-shadow: var(--shadow-accent-sm); }
+
+/* ── Typography helpers ── */
+.label-upper {
+  font-size: var(--text-xs);
+  font-weight: var(--font-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-text-muted);
+}
+
+.caption { font-size: var(--text-xxs); color: var(--color-text-muted); }
+.mono    { font-family: var(--font-mono); }
+
+/* ── Component classes ── */
+
+/* Card — obsidian */
+.card {
+  background-color: var(--card-bg);
+  box-shadow: var(--card-shadow);
+  border-radius: var(--card-radius);
+  padding: var(--card-padding);
+}
+
+/* Card — black */
+.card-black {
+  background-color: var(--card-black-bg);
+  box-shadow: var(--card-black-shadow);
+  border-radius: var(--card-black-radius);
+}
+
+/* Floating sidebar */
+.sidebar {
+  width: var(--sidebar-width);
+  background-color: var(--sidebar-bg);
+  box-shadow: var(--sidebar-shadow);
+  border-radius: var(--sidebar-radius);
+}
+
+.sidebar-sm {
+  width: var(--sidebar-width-sm);
+}
+
+/* Nav item */
+.nav-item {
+  height: var(--nav-height);
+  border-radius: var(--nav-radius);
+  color: var(--color-text-secondary);
+  transition:
+    background var(--duration-fast) var(--ease-standard),
+    box-shadow  var(--duration-fast) var(--ease-standard),
+    color       var(--duration-fast) var(--ease-standard);
+}
+
+.nav-item:hover {
+  background-color: var(--color-bg-hover);
+  box-shadow: var(--shadow-neu-sm);
+  color: var(--color-text-primary);
+}
+
+.nav-item.active {
+  background-color: var(--nav-active-bg);
+  box-shadow: var(--nav-active-shadow);
+  color: var(--nav-active-color);
+}
+
+/* Buttons */
+.btn {
+  height: var(--btn-height);
+  border-radius: var(--btn-radius);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  border: none;
+  cursor: pointer;
+  padding: 0 var(--spacing-4);
+  transition:
+    box-shadow  var(--duration-fast) var(--ease-standard),
+    background  var(--duration-fast) var(--ease-standard),
+    transform   var(--duration-fast) var(--ease-standard);
+}
+
+.btn:active { transform: scale(0.96); }
+
+.btn-sm { height: var(--btn-height-sm); padding: 0 var(--spacing-3); font-size: var(--text-xs); }
+.btn-lg { height: var(--btn-height-lg); padding: 0 var(--spacing-6); font-size: var(--text-md); }
+
+.btn-ghost {
+  background-color: var(--btn-ghost-bg);
+  box-shadow: var(--btn-ghost-shadow);
+  color: var(--color-text-secondary);
+}
+.btn-ghost:hover { color: var(--color-text-primary); box-shadow: var(--shadow-neu); }
+
+.btn-primary {
+  background-color: var(--btn-primary-bg);
+  box-shadow: var(--btn-primary-shadow);
+  color: #ffffff;
+}
+.btn-primary:hover { background-color: var(--color-accent-hover); }
+
+/* Input */
+.input {
+  height: var(--input-height);
+  border-radius: var(--input-radius);
+  background-color: var(--input-bg);
+  box-shadow: var(--input-shadow);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  border: none;
+  padding: 0 var(--spacing-3);
+  outline: none;
+  transition: box-shadow var(--duration-fast) var(--ease-standard);
+}
+
+.input::placeholder { color: var(--color-text-muted); }
+.input:focus        { box-shadow: var(--input-focus-shadow); }
+.input-sm           { height: var(--input-height-sm); font-size: var(--text-xs); }
+
+/* Activity row */
+.activity-row {
+  background-color: var(--activity-bg);
+  box-shadow: var(--activity-shadow);
+  border-radius: var(--activity-radius);
+}
+
+/* Status dots */
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+}
+.dot-accent   { background-color: var(--color-accent);   box-shadow: 0 0 6px var(--color-accent); }
+.dot-success  { background-color: var(--color-success);  box-shadow: 0 0 6px var(--color-success); }
+.dot-warning  { background-color: var(--color-warning);  box-shadow: 0 0 6px var(--color-warning); }
+.dot-danger   { background-color: var(--color-danger);   box-shadow: 0 0 6px var(--color-danger); }
+.dot-mist     { background-color: var(--color-mist); }
+
+/* Badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px var(--spacing-2);
+  border-radius: var(--badge-radius);
+  font-size: var(--text-xxs);
+  font-weight: var(--font-semibold);
+  box-shadow: var(--shadow-neu-sm);
+}
+
+.badge-success { background-color: var(--badge-success-bg); color: var(--badge-success-color); }
+.badge-warning { background-color: var(--badge-warning-bg); color: var(--badge-warning-color); }
+.badge-danger  { background-color: var(--badge-danger-bg);  color: var(--badge-danger-color); }
+.badge-info    { background-color: var(--badge-info-bg);    color: var(--badge-info-color); }
+
+/* Photo card */
+.photo-card {
+  background-color: var(--card-black-bg);
+  box-shadow: var(--photo-card-shadow);
+  border-radius: var(--photo-card-radius);
+  overflow: hidden;
+  cursor: pointer;
+  transition:
+    box-shadow  var(--duration-base) var(--ease-standard),
+    transform   var(--duration-base) var(--ease-standard);
+}
+
+.photo-card:hover {
+  box-shadow: var(--photo-card-shadow-hover);
+  transform: scale(1.01);
+  z-index: var(--z-raised);
 }
