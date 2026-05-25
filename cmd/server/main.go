@@ -84,16 +84,27 @@ func main() {
 	if frontendDir == "" {
 		frontendDir = "./web/dist"
 	}
-	// Serve static assets (JS, CSS, etc)
-	mux.Handle("/assets/", http.FileServer(http.Dir(frontendDir)))
-	// Serve index.html for all other routes (SPA routing)
+	
+	// Create file server for static assets
+	fs := http.FileServer(http.Dir(frontendDir))
+	
+	// Serve static assets and SPA routing
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		// If it's an API or photos request, let it fall through
 		if strings.HasPrefix(r.URL.Path, "/api/") || strings.HasPrefix(r.URL.Path, "/photos/") {
 			http.NotFound(w, r)
 			return
 		}
-		// Serve index.html for all frontend routes
+		
+		// Check if the requested file exists
+		path := filepath.Join(frontendDir, r.URL.Path)
+		if _, err := os.Stat(path); err == nil {
+			// File exists, serve it
+			fs.ServeHTTP(w, r)
+			return
+		}
+		
+		// File doesn't exist, serve index.html for SPA routing
 		http.ServeFile(w, r, filepath.Join(frontendDir, "index.html"))
 	})
 
