@@ -16,7 +16,7 @@ RUN echo "experimental-features = nix-command flakes" >> /etc/nix/nix.conf
 COPY flake.nix flake.lock ./
 RUN nix develop --command echo "Nix environment ready"
 COPY . .
-RUN nix develop --command sh -c 'CGO_ENABLED=0 go build -ldflags="-w -s" -o server ./cmd/server'
+RUN nix develop --command sh -c 'CGO_ENABLED=0 go build -tags "osusergo,netgo,static_build" -ldflags="-w -s -extldflags=-static" -o server ./cmd/server'
 
 # Final runtime stage
 FROM debian:bookworm-slim
