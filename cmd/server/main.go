@@ -21,10 +21,14 @@ func main() {
 		dataDir = "./data"
 	}
 	photosDir := filepath.Join(dataDir, "photos")
+	thumbsDir := filepath.Join(dataDir, "thumbs")
 	
 	// Ensure directories exist
 	if err := os.MkdirAll(photosDir, 0755); err != nil {
 		log.Fatalf("Failed to create photos directory: %v", err)
+	}
+	if err := os.MkdirAll(thumbsDir, 0755); err != nil {
+		log.Fatalf("Failed to create thumbs directory: %v", err)
 	}
 
 	// ── Data layer ──

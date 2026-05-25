@@ -15,14 +15,19 @@ func GenerateThumbnail(photoPath string, photosDir string) (string, error) {
 		return "", err
 	}
 
-	// Generate thumbnail filename: photo.jpg -> thumb_photo.jpg
+	// Create thumbs subdirectory if it doesn't exist
+	thumbsDir := filepath.Join(photosDir, "thumbs")
+	if err := os.MkdirAll(thumbsDir, 0755); err != nil {
+		return "", err
+	}
+
+	// Generate thumbnail filename: photo.jpg -> thumbs/photo.jpg
 	filename := filepath.Base(photoPath)
-	thumbFilename := "thumb_" + filename
-	thumbPath := filepath.Join(photosDir, thumbFilename)
+	thumbPath := filepath.Join(thumbsDir, filename)
 
 	// Check if thumbnail already exists
 	if _, err := os.Stat(thumbPath); err == nil {
-		return filepath.Join("photos", thumbFilename), nil
+		return filepath.Join("photos", "thumbs", filename), nil
 	}
 
 	// Resize to 800px width, height auto-calculated (keeps aspect ratio)
@@ -33,5 +38,5 @@ func GenerateThumbnail(photoPath string, photosDir string) (string, error) {
 		return "", err
 	}
 
-	return filepath.Join("photos", thumbFilename), nil
+	return filepath.Join("photos", "thumbs", filename), nil
 }
