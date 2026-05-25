@@ -31,8 +31,8 @@ COPY --from=backend-builder /app/server /app/server
 # Copy frontend build
 COPY --from=frontend-builder /app/web/dist /app/web/dist
 
-# Create data directory for photos and database
-RUN mkdir -p /app/data/photos
+# Create data directory for photos, thumbnails and database
+RUN mkdir -p /app/data/photos/thumbs
 
 # Environment variables
 ENV DATA_DIR=/app/data
