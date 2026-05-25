@@ -135,10 +135,18 @@ func (h *PhotoHandler) UploadPhoto(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Generate thumbnail
+	thumbPath, err := service.GenerateThumbnail(savePath, photosDir)
+	if err != nil {
+		log.Printf("Failed to generate thumbnail: %v", err)
+		thumbPath = "" // Continue without thumbnail
+	}
+
 	photo := &model.Photo{
-		Filename: header.Filename,
-		Path:     filepath.Join("photos", filename),
-		Caption:  r.FormValue("caption"),
+		Filename:      header.Filename,
+		Path:          filepath.Join("photos", filename),
+		ThumbnailPath: thumbPath,
+		Caption:       r.FormValue("caption"),
 	}
 
 	if err := h.svc.SavePhoto(photo); err != nil {

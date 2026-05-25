@@ -67,6 +67,7 @@ func (s *SQLiteStore) migrate() error {
 		`ALTER TABLE photos ADD COLUMN iso TEXT;`,
 		`ALTER TABLE photos ADD COLUMN location TEXT;`,
 		`ALTER TABLE photos ADD COLUMN date_taken TEXT;`,
+		`ALTER TABLE photos ADD COLUMN thumbnail_path TEXT;`,
 	}
 	for _, q := range alterQueries {
 		if _, err := s.db.Exec(q); err != nil {

@@ -18,16 +18,20 @@ func NewPhotoStore(db *sql.DB) *PhotoStore {
 }
 
 // all columns for SELECT queries
-const photoCols = `id, filename, path, caption, description, camera, lens, aperture, shutter_speed, iso, location, date_taken, created_at`
+const photoCols = `id, filename, path, thumbnail_path, caption, description, camera, lens, aperture, shutter_speed, iso, location, date_taken, created_at`
 
 func scanPhoto(rows *sql.Rows) (model.Photo, error) {
 	var p model.Photo
+	var thumbnailPath sql.NullString
 	var dateTaken sql.NullString
 	err := rows.Scan(
-		&p.ID, &p.Filename, &p.Path, &p.Caption, &p.Description,
+		&p.ID, &p.Filename, &p.Path, &thumbnailPath, &p.Caption, &p.Description,
 		&p.Camera, &p.Lens, &p.Aperture, &p.ShutterSpeed, &p.ISO,
 		&p.Location, &dateTaken, &p.CreatedAt,
 	)
+	if thumbnailPath.Valid {
+		p.ThumbnailPath = thumbnailPath.String
+	}
 	if dateTaken.Valid {
 		p.DateTaken = dateTaken.String
 	}
@@ -40,8 +44,8 @@ func (s *PhotoStore) SavePhoto(p *model.Photo) error {
 	}
 	p.CreatedAt = time.Now()
 	_, err := s.db.Exec(
-		`INSERT INTO photos (id, filename, path, caption, description, camera, lens, aperture, shutter_speed, iso, location, date_taken, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-		p.ID, p.Filename, p.Path, p.Caption, p.Description,
+		`INSERT INTO photos (id, filename, path, thumbnail_path, caption, description, camera, lens, aperture, shutter_speed, iso, location, date_taken, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+		p.ID, p.Filename, p.Path, p.ThumbnailPath, p.Caption, p.Description,
 		p.Camera, p.Lens, p.Aperture, p.ShutterSpeed, p.ISO,
 		p.Location, p.DateTaken, p.CreatedAt,
 	)
@@ -55,8 +59,8 @@ func (s *PhotoStore) SavePhoto(p *model.Photo) error {
 
 func (s *PhotoStore) UpdatePhoto(p *model.Photo) error {
 	_, err := s.db.Exec(
-		`UPDATE photos SET caption=?, description=?, camera=?, lens=?, aperture=?, shutter_speed=?, iso=?, location=?, date_taken=? WHERE id=?`,
-		p.Caption, p.Description, p.Camera, p.Lens, p.Aperture, p.ShutterSpeed, p.ISO, p.Location, p.DateTaken, p.ID,
+		`UPDATE photos SET thumbnail_path=?, caption=?, description=?, camera=?, lens=?, aperture=?, shutter_speed=?, iso=?, location=?, date_taken=? WHERE id=?`,
+		p.ThumbnailPath, p.Caption, p.Description, p.Camera, p.Lens, p.Aperture, p.ShutterSpeed, p.ISO, p.Location, p.DateTaken, p.ID,
 	)
 	if err != nil {
 		log.Printf("UpdatePhoto error: %v", err)
