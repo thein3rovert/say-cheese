@@ -7,6 +7,7 @@ export interface Photo {
   id: string
   filename: string
   path: string
+  thumbnail_path: string
   caption: string
   description: string
   camera: string

@@ -500,7 +500,7 @@ export default function Gallery({ isAdmin = false }: GalleryProps) {
               onClick={() => handlePhotoClick(photo)}
             >
               <img
-                src={photoUrl(photo.path)}
+                src={photoUrl(photo.thumbnail_path || photo.path)}
                 alt={photo.caption}
                 loading="lazy"
                 className="block h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
