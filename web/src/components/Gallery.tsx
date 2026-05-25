@@ -1,6 +1,65 @@
 import { useState, useCallback, useEffect } from 'react'
 import { usePhotos, usePhotoSearch, useDeletePhoto, useUpdatePhoto } from '../api/photos'
 import type { Photo, Tag } from '../api/photos'
+import { Combobox } from './Combobox'
+
+// Common options for dropdowns
+const COMMON_CAMERAS = [
+  'FUJIFILM X-E4',
+  'FUJIFILM X-T5',
+  'FUJIFILM X100VI',
+  'CANON EOS R5',
+  'SONY A7 IV',
+  'NIKON Z8',
+]
+
+const COMMON_LENSES = [
+  '23MM',
+  '35MM',
+  '50MM',
+  '56MM',
+  '16-55MM',
+  '18-55MM',
+]
+
+const COMMON_APERTURES = [
+  'F/1.2',
+  'F/1.4',
+  'F/1.8',
+  'F/2',
+  'F/2.8',
+  'F/4',
+  'F/5.6',
+  'F/8',
+]
+
+const COMMON_SHUTTERS = [
+  '1/4000S',
+  '1/2000S',
+  '1/1000S',
+  '1/500S',
+  '1/250S',
+  '1/125S',
+  '1/60S',
+  '1/30S',
+]
+
+const COMMON_ISOS = [
+  '100',
+  '200',
+  '400',
+  '800',
+  '1600',
+  '3200',
+  '6400',
+]
+
+const COMMON_LOCATIONS = [
+  'London, UK',
+  'Tokyo, Japan',
+  'New York, USA',
+  'Paris, France',
+]
 
 function photoUrl(path: string) {
   return `/${path}`
@@ -268,80 +327,61 @@ function EditModal({ photo, onClose, onSave, isSaving }: EditModalProps) {
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label style={labelStyle}>Camera</label>
-                <input
-                  type="text"
-                  value={form.camera}
-                  onChange={(e) => handleChange('camera', e.target.value)}
-                  style={inputStyle}
-                  placeholder="FUJIFILM X-E4"
-                />
-              </div>
-              <div>
-                <label style={labelStyle}>Lens</label>
-                <input
-                  type="text"
-                  value={form.lens}
-                  onChange={(e) => handleChange('lens', e.target.value)}
-                  style={inputStyle}
-                  placeholder="23mm"
-                />
-              </div>
+              <Combobox
+                label="Camera"
+                value={form.camera}
+                onChange={(value) => handleChange('camera', value)}
+                options={COMMON_CAMERAS}
+                placeholder="FUJIFILM X-E4"
+              />
+              <Combobox
+                label="Lens"
+                value={form.lens}
+                onChange={(value) => handleChange('lens', value)}
+                options={COMMON_LENSES}
+                placeholder="23mm"
+              />
             </div>
 
             <div className="grid grid-cols-3 gap-4">
-              <div>
-                <label style={labelStyle}>Aperture</label>
-                <input
-                  type="text"
-                  value={form.aperture}
-                  onChange={(e) => handleChange('aperture', e.target.value)}
-                  style={inputStyle}
-                  placeholder="f/2.8"
-                />
-              </div>
-              <div>
-                <label style={labelStyle}>Shutter</label>
-                <input
-                  type="text"
-                  value={form.shutter_speed}
-                  onChange={(e) => handleChange('shutter_speed', e.target.value)}
-                  style={inputStyle}
-                  placeholder="1/500s"
-                />
-              </div>
-              <div>
-                <label style={labelStyle}>ISO</label>
-                <input
-                  type="text"
-                  value={form.iso}
-                  onChange={(e) => handleChange('iso', e.target.value)}
-                  style={inputStyle}
-                  placeholder="400"
-                />
-              </div>
+              <Combobox
+                label="Aperture"
+                value={form.aperture}
+                onChange={(value) => handleChange('aperture', value)}
+                options={COMMON_APERTURES}
+                placeholder="F/2.8"
+              />
+              <Combobox
+                label="Shutter"
+                value={form.shutter_speed}
+                onChange={(value) => handleChange('shutter_speed', value)}
+                options={COMMON_SHUTTERS}
+                placeholder="1/500S"
+              />
+              <Combobox
+                label="ISO"
+                value={form.iso}
+                onChange={(value) => handleChange('iso', value)}
+                options={COMMON_ISOS}
+                placeholder="400"
+              />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label style={labelStyle}>Location</label>
-                <input
-                  type="text"
-                  value={form.location}
-                  onChange={(e) => handleChange('location', e.target.value)}
-                  style={inputStyle}
-                  placeholder="Tokyo, Japan"
-                />
-              </div>
+              <Combobox
+                label="Location"
+                value={form.location}
+                onChange={(value) => handleChange('location', value)}
+                options={COMMON_LOCATIONS}
+                placeholder="Tokyo, Japan"
+              />
               <div>
                 <label style={labelStyle}>Date Taken</label>
                 <input
-                  type="text"
+                  type="date"
                   value={form.date_taken}
                   onChange={(e) => handleChange('date_taken', e.target.value)}
                   style={inputStyle}
-                  placeholder="4/14/2026"
                 />
               </div>
             </div>
